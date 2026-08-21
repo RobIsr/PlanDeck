@@ -1,0 +1,23 @@
+{
+  "name": "plandeck",
+  "version": "0.2.0",
+  "description": "Terminal UI for reviewing and editing Copilot CLI plans with per-step reasoning",
+  "bin": {
+    "plandeck": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ink": "^3.2.0",
+    "ink-text-input": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "react": "^17.0.2"
+  },
+  "keywords": [
+    "cli",
+    "plan",
+    "tui"
+  ],
+  "license": "MIT"
+}
