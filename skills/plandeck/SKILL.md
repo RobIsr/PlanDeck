@@ -63,5 +63,26 @@ The watcher completion notifies the agent when the user makes a decision.
 Read the completed watcher with `read_powershell` and parse its JSON:
 
 - `"decision": "approved"`: proceed with implementation.
+- `"decision": "execute_step"`: implement only the returned `step`. Do not implement any other
+  step, including its dependencies or the next pending step. Do not recreate or manually edit the
+  plan YAML while implementing it. After successful implementation and validation, delete the stale
+  result file, restart the watcher from step 2, and reopen PlanDeck with:
+
+  ```powershell
+  plandeck "C:\path\to\current-plan.yaml" --complete-step "<stepId>" --result-file "C:\path\to\current-plan.result.json"
+  ```
+
+  `--complete-step` verifies that exactly one step has the returned ID and that it is currently
+  `in_progress`, then marks only that step `done`. PlanDeck automatically selects the next
+  `pending` step. Continue this one-step loop until the user approves, requests changes, or
+  dismisses PlanDeck. If implementation fails or is blocked, do not run `--complete-step`; report
+  the failure to the user instead.
+- `"decision": "ask_step"`: create a coordinated child session in the current project for the
+  returned `question`. Read the full plan from `planFile` and include it in the kickoff prompt
+  together with the returned `step` and the user's exact question. Instruct the child session to
+  explain the step and answer the question without implementing changes. Do not wait for the child
+  session to finish and do not navigate away from the current session. Delete the stale result
+  file, restart the watcher, and immediately reopen PlanDeck with the same plan and result file
+  (without `--complete-step`) so review can continue.
 - `"decision": "changes_requested"`: use `feedback` to revise the YAML, then reopen it.
 - `"decision": "dismissed"`: ask the user how to proceed.
